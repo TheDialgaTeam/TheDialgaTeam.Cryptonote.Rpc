@@ -24,7 +24,7 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Http
             HttpClient = new HttpClient { BaseAddress = new Uri($"{(HttpRpcClientOptions.UseSecureEndpoints ? "https" : "http")}://{hostname}/"), Timeout = Timeout.InfiniteTimeSpan };
         }
 
-        public async Task<TResponse> GetHttpRpcResponse<TResponse>(string endpoint, CancellationToken cancellationToken = default)
+        public async Task<TResponse> GetHttpRpcResponseAsync<TResponse>(string endpoint, CancellationToken cancellationToken = default)
         {
             HttpResponseMessage response = null;
             var cancellationTokenSource = new CancellationTokenSource(HttpRpcClientOptions.RequestTimeoutDelay);
@@ -53,7 +53,7 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Http
             }
         }
 
-        public async Task<TResponse> GetHttpRpcResponse<TResponse, TRequest>(string endpoint, TRequest request, CancellationToken cancellationToken = default)
+        public async Task<TResponse> GetHttpRpcResponseAsync<TResponse, TRequest>(string endpoint, TRequest request, CancellationToken cancellationToken = default)
         {
             HttpResponseMessage response = null;
             var cancellationTokenSource = new CancellationTokenSource(HttpRpcClientOptions.RequestTimeoutDelay);

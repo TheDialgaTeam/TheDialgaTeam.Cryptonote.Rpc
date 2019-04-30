@@ -2,7 +2,7 @@
 
 namespace TheDialgaTeam.Cryptonote.Rpc.Http
 {
-    internal class HttpRpcClientOptions
+    public class HttpRpcClientOptions
     {
         /// <summary>
         /// Get/Set the time delay for the request to be considered as a time out.
