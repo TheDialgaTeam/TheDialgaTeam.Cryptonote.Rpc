@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using TheDialgaTeam.Cryptonote.Rpc.Http;
-using TheDialgaTeam.Cryptonote.Rpc.Worktips.Json;
+using TheDialgaTeam.Cryptonote.Rpc.Worktips.Json.Daemon;
 using HttpRpcClient = TheDialgaTeam.Cryptonote.Rpc.Worktips.Http.HttpRpcClient;
 
 namespace TheDialgaTeam.Cryptonote.Rpc.Worktips

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace TheDialgaTeam.Cryptonote.Rpc.Worktips.Json
+namespace TheDialgaTeam.Cryptonote.Rpc.Worktips.Json.Daemon
 {
     public class CommandRpcGetInfo
     {
