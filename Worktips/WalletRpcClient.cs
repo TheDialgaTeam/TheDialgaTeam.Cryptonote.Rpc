@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using TheDialgaTeam.Cryptonote.Rpc.Http;
+using TheDialgaTeam.Cryptonote.Rpc.Json;
 using TheDialgaTeam.Cryptonote.Rpc.Worktips.Json.Wallet;
 using HttpRpcClient = TheDialgaTeam.Cryptonote.Rpc.Worktips.Http.HttpRpcClient;
 
@@ -19,6 +20,17 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Worktips
         public WalletRpcClient(string hostname, string username = null, string password = null, HttpRpcClientOptions httpRpcClientOptions = null)
         {
             HttpRpcClient = new HttpRpcClient(hostname, username, password, httpRpcClientOptions);
+        }
+
+        /// <summary>
+        /// Return the wallet's balance.
+        /// </summary>
+        /// <param name="accountIndex">Return balance for this account.</param>
+        /// <param name="addressIndices">Return balance detail for those subaddresses.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        public async Task<CommandRpcGetBalance.Response> GetBalanceAsync(uint accountIndex, uint[] addressIndices = null, CancellationToken cancellationToken = default)
+        {
+            return await HttpRpcClient.GetHttpJsonRpcResponseAsync<CommandRpcGetBalance.Response, CommandRpcGetBalance.Request>("get_balance", new CommandRpcGetBalance.Request { AccountIndex = accountIndex, AddressIndices = addressIndices }, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -50,6 +62,34 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Worktips
         public async Task<CommandRpcCreateAccount.Response> CreateAccountAsync(string label = null, CancellationToken cancellationToken = default)
         {
             return await HttpRpcClient.GetHttpJsonRpcResponseAsync<CommandRpcCreateAccount.Response, CommandRpcCreateAccount.Request>("create_account", new CommandRpcCreateAccount.Request { Label = label }, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Returns the wallet's current block height.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        public async Task<CommandRpcGetHeight.Response> GetHeightAsync(CancellationToken cancellationToken = default)
+        {
+            return await HttpRpcClient.GetHttpJsonRpcResponseAsync<CommandRpcGetHeight.Response>("get_height", cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Same as transfer, but can split into more than one tx if necessary.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        public async Task<CommandRpcTransferSplit.Response> TransferSplitAsync(CommandRpcTransferSplit.Request request, CancellationToken cancellationToken = default)
+        {
+            return await HttpRpcClient.GetHttpJsonRpcResponseAsync<CommandRpcTransferSplit.Response, CommandRpcTransferSplit.Request>("transfer_split", request, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Save the wallet file.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        public async Task StoreAsync(CancellationToken cancellationToken = default)
+        {
+            await HttpRpcClient.GetHttpJsonRpcResponseAsync<JsonRpc.Response>("store", cancellationToken).ConfigureAwait(false);
         }
 
         public void Dispose()

@@ -26,10 +26,14 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Json
         public class Error
         {
             [JsonProperty("code")]
-            public ulong Code { get; set; }
+            public long Code { get; set; }
 
             [JsonProperty("message")]
             public string Message { get; set; }
+        }
+
+        public class Response : Response<string[]>
+        {
         }
 
         public class Response<TResponse>
