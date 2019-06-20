@@ -1,18 +1,19 @@
 ﻿using System;
+using System.Net.Http;
 
 namespace TheDialgaTeam.Cryptonote.Rpc.Http
 {
     public class HttpRpcClientOptions
     {
         /// <summary>
+        /// Get/Set the http client handler for the http client connection.
+        /// </summary>
+        public HttpClientHandler HttpClientHandler { get; set; } = new HttpClientHandler();
+
+        /// <summary>
         /// Get/Set the time delay for the request to be considered as a time out.
         /// </summary>
         public TimeSpan RequestTimeoutDelay { get; set; } = TimeSpan.FromSeconds(100);
-
-        /// <summary>
-        /// Get/Set whether to use secure endpoints (https) for the request.
-        /// </summary>
-        public bool UseSecureEndpoints { get; set; }
 
         /// <summary>
         /// Get/Set json rpc version.

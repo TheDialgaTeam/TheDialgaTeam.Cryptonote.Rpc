@@ -9,20 +9,25 @@ using TheDialgaTeam.Cryptonote.Rpc.Json;
 
 namespace TheDialgaTeam.Cryptonote.Rpc.Http
 {
-    internal class HttpRpcClient : IDisposable
+    internal abstract class HttpRpcClient : IDisposable
     {
         protected HttpClient HttpClient { get; set; }
 
         protected HttpRpcClientOptions HttpRpcClientOptions { get; }
 
-        public HttpRpcClient(string host, ushort port, HttpRpcClientOptions httpRpcClientOptions = null) : this($"{host}:{port}", httpRpcClientOptions)
+        protected HttpRpcClient(string hostname, HttpRpcClientOptions httpRpcClientOptions = null)
         {
-        }
+            if (string.IsNullOrWhiteSpace(hostname))
+                throw new ArgumentException("Invalid host to connect.", nameof(hostname));
 
-        public HttpRpcClient(string hostname, HttpRpcClientOptions httpRpcClientOptions = null)
-        {
+            if (!hostname.StartsWith("http://", StringComparison.OrdinalIgnoreCase) && !hostname.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                hostname = $"http://{hostname}";
+
+            if (!hostname.EndsWith("/"))
+                hostname = $"{hostname}/";
+
             HttpRpcClientOptions = httpRpcClientOptions ?? new HttpRpcClientOptions();
-            HttpClient = new HttpClient { BaseAddress = new Uri($"{(HttpRpcClientOptions.UseSecureEndpoints ? "https" : "http")}://{hostname}/"), Timeout = Timeout.InfiniteTimeSpan };
+            HttpClient = new HttpClient(HttpRpcClientOptions.HttpClientHandler) { BaseAddress = new Uri(hostname), Timeout = Timeout.InfiniteTimeSpan };
         }
 
         public async Task<TResponse> GetHttpRpcResponseAsync<TResponse>(string endpoint, CancellationToken cancellationToken = default)

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
+﻿using System.Net;
 using TheDialgaTeam.Cryptonote.Rpc.Http;
 
 namespace TheDialgaTeam.Cryptonote.Rpc.Worktips.Http
@@ -14,11 +11,10 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Worktips.Http
 
         public HttpRpcClient(string hostname, string username = null, string password = null, HttpRpcClientOptions httpRpcClientOptions = null) : base(hostname, httpRpcClientOptions)
         {
-            if (username == null || password == null)
+            if (string.IsNullOrWhiteSpace(username))
                 return;
 
-            HttpClient.Dispose();
-            HttpClient = new HttpClient(new HttpClientHandler { Credentials = new NetworkCredential(username, password) }) { BaseAddress = new Uri($"{(HttpRpcClientOptions.UseSecureEndpoints ? "https" : "http")}://{hostname}/"), Timeout = Timeout.InfiniteTimeSpan };
+            HttpRpcClientOptions.HttpClientHandler.Credentials = new NetworkCredential(username, password ?? "");
         }
     }
 }
