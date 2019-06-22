@@ -1,7 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <AssemblyName>TheDialgaTeam.Cryptonote.Rpc</AssemblyName>
+    <RootNamespace>TheDialgaTeam.Cryptonote.Rpc</RootNamespace>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>TheDialgaTeam.Cryptonote.Rpc</PackageId>
+    <Version>0.0.1.0</Version>
+    <Authors>Yong Jian Ming</Authors>
+    <Company>The Dialga Team</Company>
+    <Product>TheDialgaTeam.Cryptonote.Rpc</Product>
+    <Description>Cryptonote Rpc functions.</Description>
+    <PackageProjectUrl>https://github.com/TheDialgaTeam/TheDialgaTeam.Cryptonote.Rpc</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/TheDialgaTeam/TheDialgaTeam.Cryptonote.Rpc</RepositoryUrl>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
   </PropertyGroup>
 
   <ItemGroup>

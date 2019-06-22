@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using TheDialgaTeam.Cryptonote.Rpc.Http;
@@ -12,14 +13,14 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Worktips
     {
         private HttpRpcClient HttpRpcClient { get; }
 
-        public WalletRpcClient(string host, ushort port = 31024, string username = null, string password = null, HttpRpcClientOptions httpRpcClientOptions = null)
+        public WalletRpcClient(string host, ushort port = 31024, string username = null, string password = null, HttpRpcClientOptions httpRpcClientOptions = null, Action<HttpClient> implementationAction = null)
         {
-            HttpRpcClient = new HttpRpcClient(host, port, username, password, httpRpcClientOptions);
+            HttpRpcClient = new HttpRpcClient(host, port, username, password, httpRpcClientOptions, implementationAction);
         }
 
-        public WalletRpcClient(string hostname, string username = null, string password = null, HttpRpcClientOptions httpRpcClientOptions = null)
+        public WalletRpcClient(string hostname, string username = null, string password = null, HttpRpcClientOptions httpRpcClientOptions = null, Action<HttpClient> implementationAction = null)
         {
-            HttpRpcClient = new HttpRpcClient(hostname, username, password, httpRpcClientOptions);
+            HttpRpcClient = new HttpRpcClient(hostname, username, password, httpRpcClientOptions, implementationAction);
         }
 
         /// <summary>

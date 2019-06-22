@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using TheDialgaTeam.Cryptonote.Rpc.Http;
@@ -11,14 +12,14 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Worktips
     {
         private HttpRpcClient HttpRpcClient { get; }
 
-        public DaemonRpcClient(string host, ushort port = 31022, string username = null, string password = null, HttpRpcClientOptions httpRpcClientOptions = null)
+        public DaemonRpcClient(string host, ushort port = 31022, string username = null, string password = null, HttpRpcClientOptions httpRpcClientOptions = null, Action<HttpClient> implementationAction = null)
         {
-            HttpRpcClient = new HttpRpcClient(host, port, username, password, httpRpcClientOptions);
+            HttpRpcClient = new HttpRpcClient(host, port, username, password, httpRpcClientOptions, implementationAction);
         }
 
-        public DaemonRpcClient(string hostname, string username = null, string password = null, HttpRpcClientOptions httpRpcClientOptions = null)
+        public DaemonRpcClient(string hostname, string username = null, string password = null, HttpRpcClientOptions httpRpcClientOptions = null, Action<HttpClient> implementationAction = null)
         {
-            HttpRpcClient = new HttpRpcClient(hostname, username, password, httpRpcClientOptions);
+            HttpRpcClient = new HttpRpcClient(hostname, username, password, httpRpcClientOptions, implementationAction);
         }
 
         /// <summary>
