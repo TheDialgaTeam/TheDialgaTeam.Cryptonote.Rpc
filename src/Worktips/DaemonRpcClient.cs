@@ -37,7 +37,7 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Worktips
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         public async Task<CommandRpcGetInfo.Response> GetInfoAsync(CancellationToken cancellationToken = default)
         {
-            return await HttpRpcClient.GetHttpJsonRpcResponseAsync<CommandRpcGetInfo.Response>("get_info", cancellationToken).ConfigureAwait(false);
+            return await HttpRpcClient.GetHttpRpcResponseAsync<CommandRpcGetInfo.Response>("get_info", cancellationToken).ConfigureAwait(false);
         }
 
         public void Dispose()
