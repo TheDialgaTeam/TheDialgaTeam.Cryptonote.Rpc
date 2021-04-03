@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AssemblyName>TheDialgaTeam.Cryptonote.Rpc</AssemblyName>
     <RootNamespace>TheDialgaTeam.Cryptonote.Rpc</RootNamespace>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>TheDialgaTeam.Cryptonote.Rpc</PackageId>
     <Version>0.0.1.0</Version>
     <Authors>Yong Jian Ming</Authors>
@@ -15,6 +15,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>embedded</DebugType>
     <DebugSymbols>true</DebugSymbols>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -28,7 +29,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
 </Project>

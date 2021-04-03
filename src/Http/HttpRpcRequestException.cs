@@ -6,28 +6,14 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Http
 {
     public class HttpRpcRequestException : HttpRequestException
     {
-        public override string Message { get; }
-
-        public HttpRpcRequestException(HttpResponseMessage httpResponseMessage, Exception exception)
+        public HttpRpcRequestException(HttpResponseMessage httpResponseMessage, Exception exception) : base(httpResponseMessage.StatusCode switch
         {
-            switch (httpResponseMessage?.StatusCode)
-            {
-                case HttpStatusCode.NotFound:
-                    Message = "Invalid RPC endpoint.";
-                    break;
-
-                case HttpStatusCode.InternalServerError:
-                    Message = httpResponseMessage.ReasonPhrase;
-                    break;
-
-                case HttpStatusCode.Unauthorized:
-                    Message = "Authentication is required for this RPC request.";
-                    break;
-
-                default:
-                    Message = exception.Message;
-                    break;
-            }
+            HttpStatusCode.NotFound => "Invalid RPC endpoint.",
+            HttpStatusCode.InternalServerError => httpResponseMessage.ReasonPhrase,
+            HttpStatusCode.Unauthorized => "Authentication is required for this RPC request.",
+            var _ => exception.Message
+        })
+        {
         }
     }
 }

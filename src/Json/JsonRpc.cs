@@ -8,19 +8,19 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Json
         {
         }
 
-        public class Request<TRequest>
+        public class Request<TRequest> where TRequest : class
         {
             [JsonProperty("jsonrpc", Required = Required.Always)]
-            public string JsonRpc { get; set; }
+            public string? JsonRpc { get; set; }
 
             [JsonProperty("id")]
-            public string Id { get; set; }
+            public string? Id { get; set; }
 
             [JsonProperty("method", Required = Required.Always)]
-            public string Method { get; set; }
+            public string? Method { get; set; }
 
             [JsonProperty("params")]
-            public TRequest Parameters { get; set; }
+            public TRequest? Parameters { get; set; }
         }
 
         public class Error
@@ -29,26 +29,26 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Json
             public long Code { get; set; }
 
             [JsonProperty("message")]
-            public string Message { get; set; }
+            public string? Message { get; set; }
         }
 
         public class Response : Response<string[]>
         {
         }
 
-        public class Response<TResponse>
+        public class Response<TResponse> where TResponse : class
         {
             [JsonProperty("jsonrpc")]
-            public string JsonRpc { get; set; }
+            public string? JsonRpc { get; set; }
 
             [JsonProperty("id")]
-            public string Id { get; set; }
+            public string? Id { get; set; }
 
             [JsonProperty("result")]
-            public TResponse Result { get; set; }
+            public TResponse? Result { get; set; }
 
             [JsonProperty("error")]
-            public Error Error { get; set; }
+            public Error? Error { get; set; }
         }
     }
 }

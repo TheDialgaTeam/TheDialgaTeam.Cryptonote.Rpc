@@ -15,7 +15,7 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Worktips.Json.Daemon
             /// <summary>
             /// General RPC error code. "OK" means everything looks good.
             /// </summary>
-            [JsonProperty("Status")]
+            [JsonProperty("status")]
             public string Status { get; set; }
 
             /// <summary>
