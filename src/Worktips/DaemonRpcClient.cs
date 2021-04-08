@@ -50,6 +50,21 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Worktips
             return await _httpRpcClient.GetHttpRpcResponseAsync<CommandRpcGetTransactionPool.Response>("get_transaction_pool", cancellationToken).ConfigureAwait(false);
         }
 
+        public async Task<CommandRpcGetBlock.Response?> GetBlockAsync(CommandRpcGetBlock.Request request, CancellationToken cancellationToken = default)
+        {
+            return await _httpRpcClient.GetHttpJsonRpcResponseAsync<CommandRpcGetBlock.Response, CommandRpcGetBlock.Request>("get_block", request, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<CommandRpcGetBlockHeaderByHeight.Response?> GetBlockHeaderByHeightAsync(CommandRpcGetBlockHeaderByHeight.Request request, CancellationToken cancellationToken = default)
+        {
+            return await _httpRpcClient.GetHttpJsonRpcResponseAsync<CommandRpcGetBlockHeaderByHeight.Response, CommandRpcGetBlockHeaderByHeight.Request>("get_block_header_by_height", request, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<CommandRpcGetBlockHeaderByHash.Response?> GetBlockHeaderByHashAsync(CommandRpcGetBlockHeaderByHash.Request request, CancellationToken cancellationToken = default)
+        {
+            return await _httpRpcClient.GetHttpJsonRpcResponseAsync<CommandRpcGetBlockHeaderByHash.Response, CommandRpcGetBlockHeaderByHash.Request>("get_block_header_by_hash", request, cancellationToken).ConfigureAwait(false);
+        }
+
         public void Dispose()
         {
             _httpRpcClient.Dispose();
