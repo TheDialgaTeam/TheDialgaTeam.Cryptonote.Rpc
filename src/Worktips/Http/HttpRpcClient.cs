@@ -15,7 +15,7 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Worktips.Http
         {
             if (!string.IsNullOrWhiteSpace(username))
             {
-                HttpRpcClientOptions.HttpClientHandler.Credentials = new NetworkCredential(username, password ?? "");
+                HttpRpcClientOptions.HttpClientHandler.Credentials = new NetworkCredential(username, password ?? string.Empty);
             }
 
             implementationAction?.Invoke(HttpClient);
