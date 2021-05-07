@@ -25,10 +25,10 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Worktips.Json.Daemon
             public BlockHeaderResponse BlockHeader { get; set; }
 
             [JsonProperty("miner_tx_hash")]
-            public string  MinerTransactionHash { get; set; }
+            public string MinerTransactionHash { get; set; }
 
             [JsonProperty("tx_hashes")]
-            public string[] TransactionHashes { get; set; }
+            public string[]? TransactionHashes { get; set; }
 
             [JsonProperty("blob")]
             public string Blob { get; set; }

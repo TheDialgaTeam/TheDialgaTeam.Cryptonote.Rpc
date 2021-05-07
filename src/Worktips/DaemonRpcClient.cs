@@ -65,6 +65,11 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Worktips
             return await _httpRpcClient.GetHttpJsonRpcResponseAsync<CommandRpcGetBlockHeaderByHash.Response, CommandRpcGetBlockHeaderByHash.Request>("get_block_header_by_hash", request, cancellationToken).ConfigureAwait(false);
         }
 
+        public async Task<CommandRpcGetBlockHeadersRange.Response?> GetBlockHeadersRangeAsync(CommandRpcGetBlockHeadersRange.Request request, CancellationToken cancellationToken = default)
+        {
+            return await _httpRpcClient.GetHttpJsonRpcResponseAsync<CommandRpcGetBlockHeadersRange.Response, CommandRpcGetBlockHeadersRange.Request>("get_block_headers_range", request, cancellationToken).ConfigureAwait(false);
+        }
+
         public void Dispose()
         {
             _httpRpcClient.Dispose();

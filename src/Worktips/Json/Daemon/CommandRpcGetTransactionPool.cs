@@ -10,7 +10,7 @@ namespace TheDialgaTeam.Cryptonote.Rpc.Worktips.Json.Daemon
             public string Status { get; set; }
 
             [JsonProperty("transactions")]
-            public TransactionInfo[] Transactions { get; set; }
+            public TransactionInfo[]? Transactions { get; set; }
 
             [JsonProperty("spent_key_images")]
             public SpentKeyImageInfo[] SpentKeyImages { get; set; }
