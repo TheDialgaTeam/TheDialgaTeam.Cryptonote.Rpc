@@ -1,31 +1,56 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+using TheDialgaTeam.Cryptonote.Rpc.Http.JsonRpc;
 
-namespace TheDialgaTeam.Cryptonote.Rpc.Worktips.Json.Daemon
+namespace TheDialgaTeam.Cryptonote.Rpc.Worktips.Json.Daemon;
+
+public class CommandRpcGetBlockHeadersRange
 {
-    public class CommandRpcGetBlockHeadersRange
+    public class Request
     {
-        public class Request
-        {
-            [JsonProperty("start_height")]
-            public ulong StartHeight { get; set; }
+        /// <summary>
+        /// The starting block's height.
+        /// </summary>
+        [JsonPropertyName("start_height")]
+        public ulong StartHeight { get; set; }
 
-            [JsonProperty("end_height")]
-            public ulong EndHeight { get; set; }
+        /// <summary>
+        /// The ending block's height.
+        /// </summary>
+        [JsonPropertyName("end_height")]
+        public ulong EndHeight { get; set; }
 
-            [JsonProperty("fill_pow_hash", DefaultValueHandling = DefaultValueHandling.Ignore)]
-            public bool FillPowHash { get; set; }
-        }
-
-        public class Response
-        {
-            [JsonProperty("status")]
-            public string Status { get; set; }
-
-            [JsonProperty("headers")]
-            public BlockHeaderResponse[] Headers { get; set; }
-
-            [JsonProperty("untrusted")]
-            public bool Untrusted { get; set; }
-        }
+        /// <summary>
+        /// Tell the daemon if it should fill out pow_hash field.
+        /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonPropertyName("fill_pow_hash")]
+        public bool? FillPowHash { get; set; }
     }
+
+    public class Response
+    {
+        /// <summary>
+        /// General RPC error code. "OK" means everything looks good.
+        /// </summary>
+        [JsonPropertyName("status")]
+        public string Status { get; set; } = null!;
+
+        /// <summary>
+        /// Array of block_header (a structure containing block header information. See get_last_block_header).
+        /// </summary>
+        [JsonPropertyName("headers")]
+        public BlockHeaderResponse[] Headers { get; set; } = null!;
+
+        /// <summary>
+        /// States if the result is obtained using the bootstrap mode, and is therefore not trusted (true), or when the daemon is fully synced (false).
+        /// </summary>
+        [JsonPropertyName("untrusted")]
+        public bool Untrusted { get; set; }
+    }
+}
+
+[JsonSerializable(typeof(Request<CommandRpcGetBlockHeadersRange.Request>), GenerationMode = JsonSourceGenerationMode.Serialization)]
+[JsonSerializable(typeof(Response<CommandRpcGetBlockHeadersRange.Response>), GenerationMode = JsonSourceGenerationMode.Metadata)]
+internal partial class DaemonCommandRpcGetBlockHeadersRangeContext : JsonSerializerContext
+{
 }

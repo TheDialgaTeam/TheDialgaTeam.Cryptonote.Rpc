@@ -3,29 +3,27 @@ using TheDialgaTeam.Cryptonote.Rpc.Http.JsonRpc;
 
 namespace TheDialgaTeam.Cryptonote.Rpc.Worktips.Json.Wallet;
 
-public class CommandRpcTransferSplit
+public class CommandRpcSweepAll
 {
     public class Request
     {
         /// <summary>
-        /// Array of destinations to receive WORKTIPS.
+        /// Destination public address.
         /// </summary>
-        [JsonPropertyName("destinations")]
-        public TransferDestination[] Destinations { get; set; } = null!;
+        [JsonPropertyName("address")]
+        public string Address { get; set; } = null!;
 
         /// <summary>
-        /// (Optional) Transfer from this account index. (Defaults to 0)
+        /// Sweep transactions from this account.
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         [JsonPropertyName("account_index")]
-        public uint? AccountIndex { get; set; }
+        public uint AccountIndex { get; set; }
 
         /// <summary>
-        /// (Optional) Transfer from this set of subaddresses. (Defaults to 0)
+        /// (Optional) Sweep from this set of subaddresses in the account.
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         [JsonPropertyName("subaddr_indices")]
-        public uint[]? SubaddrIndices { get; set; }
+        public uint[]? SubaddressIndexes { get; set; }
 
         /// <summary>
         /// Set a priority for the transaction. Accepted values are: 1 for unimportant or 5 for blink.  (0 and 2-4 are accepted for backwards compatibility and are equivalent to 5)
@@ -33,44 +31,58 @@ public class CommandRpcTransferSplit
         [JsonPropertyName("priority")]
         public uint Priority { get; set; }
 
+        [JsonPropertyName("outputs")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public ulong? Outputs { get; set; }
+
         /// <summary>
         /// Number of blocks before the worktips can be spent (0 to not add a lock).
         /// </summary>
         [JsonPropertyName("unlock_time")]
-        public ulong UnlockTime { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public ulong? UnlockTime { get; set; }
 
         /// <summary>
-        /// (Optional) Random 32-byte/64-character hex string to identify a transaction.
+        /// (Optional) 64-character hex string to identify a transaction.
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         [JsonPropertyName("payment_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public string? PaymentId { get; set; }
 
         /// <summary>
         /// (Optional) Return the transaction keys after sending.
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         [JsonPropertyName("get_tx_keys")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool? GetTransactionKeys { get; set; }
 
         /// <summary>
-        /// (Optional) If true, the newly created transaction will not be relayed to the worktips network. (Defaults to false)
+        /// (Optional) Include outputs below this amount.
         /// </summary>
+        [JsonPropertyName("below_amount")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public ulong? BelowAmount { get; set; }
+
+        /// <summary>
+        /// (Optional) If true, do not relay this sweep transfer. (Defaults to false)
+        /// </summary>
         [JsonPropertyName("do_not_relay")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool? DoNotRelay { get; set; }
 
         /// <summary>
-        /// Return the transactions as hex string after sending.
+        /// (Optional) return the transactions as hex encoded string. (Defaults to false)
         /// </summary>
         [JsonPropertyName("get_tx_hex")]
-        public bool GetTransactionHex { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public bool? GetTransactionHex { get; set; }
 
         /// <summary>
-        /// Return list of transaction metadata needed to relay the transfer later.
+        /// (Optional) return the transaction metadata as a string. (Defaults to false)
         /// </summary>
         [JsonPropertyName("get_tx_metadata")]
-        public bool GetTransactionMetadata { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public bool? GetTransactionMetaData { get; set; }
     }
 
     public class Response
@@ -123,25 +135,10 @@ public class CommandRpcTransferSplit
         [JsonPropertyName("unsigned_txset")]
         public string UnsignedTransactionSet { get; set; } = null!;
     }
-
-    public class TransferDestination
-    {
-        /// <summary>
-        /// Amount to send to each destination, in atomic units.
-        /// </summary>
-        [JsonPropertyName("amount")]
-        public ulong Amount { get; set; }
-
-        /// <summary>
-        /// Destination public address.
-        /// </summary>
-        [JsonPropertyName("address")]
-        public string Address { get; set; } = null!;
-    }
 }
 
-[JsonSerializable(typeof(Request<CommandRpcTransferSplit.Request>), GenerationMode = JsonSourceGenerationMode.Serialization)]
-[JsonSerializable(typeof(Response<CommandRpcTransferSplit.Response>), GenerationMode = JsonSourceGenerationMode.Metadata)]
-internal partial class WalletCommandRpcTransferSplitContext : JsonSerializerContext
+[JsonSerializable(typeof(Request<CommandRpcSweepAll.Request>), GenerationMode = JsonSourceGenerationMode.Serialization)]
+[JsonSerializable(typeof(Response<CommandRpcSweepAll.Response>), GenerationMode = JsonSourceGenerationMode.Metadata)]
+public partial class WalletCommandRpcSweepAllContext : JsonSerializerContext
 {
 }

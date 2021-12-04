@@ -1,20 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<AssemblyName>TheDialgaTeam.Cryptonote.Rpc</AssemblyName>
-		<RootNamespace>TheDialgaTeam.Cryptonote.Rpc</RootNamespace>
-		<TargetFramework>netstandard2.1</TargetFramework>
 		<OutputType>Library</OutputType>
+		<TargetFramework>net6</TargetFramework>
+
+		<Platforms>AnyCPU;x64;x86;ARM32;ARM64</Platforms>
+		<Nullable>enable</Nullable>
+
 		<PackageId>TheDialgaTeam.Cryptonote.Rpc</PackageId>
-		<Version>1.0.0.0</Version>
+		<Version>1.0.0</Version>
 		<Authors>Yong Jian Ming</Authors>
 		<Company>TheDialgaTeam</Company>
 		<Product>TheDialgaTeam.Cryptonote.Rpc</Product>
 		<Description>Cryptonote Rpc functions.</Description>
+		<Copyright>Copyright © 2021 Yong Jian Ming</Copyright>
 		<PackageProjectUrl>https://github.com/TheDialgaTeam/TheDialgaTeam.Cryptonote.Rpc</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/TheDialgaTeam/TheDialgaTeam.Cryptonote.Rpc</RepositoryUrl>
-		<Platforms>AnyCPU;x64;x86</Platforms>
-		<Nullable>enable</Nullable>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -27,9 +31,5 @@
 		<Optimize>true</Optimize>
 		<DebugType>none</DebugType>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-	</ItemGroup>
 
 </Project>

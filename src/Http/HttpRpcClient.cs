@@ -1,135 +1,136 @@
 ﻿using System;
-using System.IO;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using TheDialgaTeam.Cryptonote.Rpc.Json;
+using TheDialgaTeam.Cryptonote.Rpc.Http.JsonRpc;
 
-namespace TheDialgaTeam.Cryptonote.Rpc.Http
+namespace TheDialgaTeam.Cryptonote.Rpc.Http;
+
+internal class HttpRpcClient : IDisposable
 {
-    internal abstract class HttpRpcClient : IDisposable
+    private readonly HttpClient _httpClient;
+    private readonly HttpRpcClientOptions _httpRpcClientOptions;
+
+    public HttpRpcClient(string hostname, HttpRpcClientOptions? httpRpcClientOptions = null, Action<HttpClient, HttpClientHandler>? implementationAction = null)
     {
-        protected HttpClient HttpClient { get; }
+        if (string.IsNullOrWhiteSpace(hostname)) throw new ArgumentException("Invalid host to connect.", nameof(hostname));
 
-        protected HttpRpcClientOptions HttpRpcClientOptions { get; }
-
-        protected HttpRpcClient(string hostname, HttpRpcClientOptions? httpRpcClientOptions = null)
+        if (!hostname.StartsWith("http://", StringComparison.OrdinalIgnoreCase) && !hostname.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
         {
-            if (string.IsNullOrWhiteSpace(hostname)) throw new ArgumentException("Invalid host to connect.", nameof(hostname));
-
-            if (!hostname.StartsWith("http://", StringComparison.OrdinalIgnoreCase) && !hostname.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-            {
-                hostname = $"http://{hostname}";
-            }
-
-            if (!hostname.EndsWith("/"))
-            {
-                hostname = $"{hostname}/";
-            }
-
-            HttpRpcClientOptions = httpRpcClientOptions ?? new HttpRpcClientOptions();
-            HttpClient = new HttpClient(HttpRpcClientOptions.HttpClientHandler) { BaseAddress = new Uri(hostname), Timeout = Timeout.InfiniteTimeSpan };
+            hostname = $"http://{hostname}";
         }
 
-        public async Task<TResponse?> GetHttpRpcResponseAsync<TResponse>(string endpoint, CancellationToken cancellationToken = default) where TResponse : class
+        if (!hostname.EndsWith("/"))
         {
-            using var cancellationTokenSource = new CancellationTokenSource(HttpRpcClientOptions.RequestTimeoutDelay);
-            var response = await HttpClient.GetAsync(endpoint, cancellationToken == default ? cancellationTokenSource.Token : cancellationToken).ConfigureAwait(false);
-            
-            try
-            {
-                response.EnsureSuccessStatusCode();
-            }
-            catch (HttpRequestException exception)
-            {
-                throw new HttpRpcRequestException(response, exception);
-            }
-
-            using var streamReader = new StreamReader(await response.Content.ReadAsStreamAsync().ConfigureAwait(false));
-            using var jsonReader = new JsonTextReader(streamReader);
-
-            return JsonSerializer.Create().Deserialize<TResponse>(jsonReader);
+            hostname = $"{hostname}/";
         }
 
-        public async Task<TResponse?> GetHttpRpcResponseAsync<TResponse, TRequest>(string endpoint, TRequest request, CancellationToken cancellationToken = default) where TRequest : class where TResponse : class
+        _httpRpcClientOptions = httpRpcClientOptions ?? new HttpRpcClientOptions();
+
+        var httpClientHandler = new HttpClientHandler();
+        _httpClient = new HttpClient(httpClientHandler) { BaseAddress = new Uri(hostname) };
+
+        implementationAction?.Invoke(_httpClient, httpClientHandler);
+    }
+
+    public async Task<TResponse?> GetHttpRpcResponseAsync<TResponse>(string endpoint, JsonTypeInfo<TResponse> responseTypeInfo, CancellationToken cancellationToken = default) where TResponse : class
+    {
+        var response = await _httpClient.GetAsync(endpoint, cancellationToken).ConfigureAwait(false);
+
+        try
         {
-            using var cancellationTokenSource = new CancellationTokenSource(HttpRpcClientOptions.RequestTimeoutDelay);
-            var response = await HttpClient.PostAsync(endpoint, new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"), cancellationToken == default ? cancellationTokenSource.Token : cancellationToken).ConfigureAwait(false);
-
-            try
-            {
-                response.EnsureSuccessStatusCode();
-            }
-            catch (HttpRequestException exception)
-            {
-                throw new HttpRpcRequestException(response, exception);
-            }
-
-            using var streamReader = new StreamReader(await response.Content.ReadAsStreamAsync().ConfigureAwait(false));
-            using var jsonReader = new JsonTextReader(streamReader);
-
-            return JsonSerializer.Create().Deserialize<TResponse>(jsonReader);
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException exception)
+        {
+            throw new HttpRpcRequestException(response, exception);
         }
 
-        public async Task<TResponse?> GetHttpJsonRpcResponseAsync<TResponse>(string method, CancellationToken cancellationToken = default) where TResponse : class
+        return await response.Content.ReadFromJsonAsync(responseTypeInfo, cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task<TResponse?> GetHttpRpcResponseAsync<TResponse, TRequest>(string endpoint, TRequest request, JsonTypeInfo<TResponse> responseTypeInfo, JsonTypeInfo<TRequest> requestTypeInfo, CancellationToken cancellationToken = default) where TRequest : class where TResponse : class
+    {
+        var response = await _httpClient.PostAsync(endpoint, new StringContent(JsonSerializer.Serialize(request, requestTypeInfo), Encoding.UTF8, "application/json"), cancellationToken).ConfigureAwait(false);
+
+        try
         {
-            using var cancellationTokenSource = new CancellationTokenSource(HttpRpcClientOptions.RequestTimeoutDelay);
-            var response = await HttpClient.PostAsync("json_rpc", new StringContent(JsonConvert.SerializeObject(new JsonRpc.Request { JsonRpc = HttpRpcClientOptions.JsonRpcVersion, Id = HttpRpcClientOptions.JsonRpcId, Method = method }), Encoding.UTF8, "application/json"), cancellationToken == default ? cancellationTokenSource.Token : cancellationToken).ConfigureAwait(false);
-
-            try
-            {
-                response.EnsureSuccessStatusCode();
-            }
-            catch (HttpRequestException exception)
-            {
-                throw new HttpRpcRequestException(response, exception);
-            }
-
-            using var streamReader = new StreamReader(await response.Content.ReadAsStreamAsync().ConfigureAwait(false));
-            using var jsonReader = new JsonTextReader(streamReader);
-
-            var result = JsonSerializer.Create().Deserialize<JsonRpc.Response<TResponse>>(jsonReader);
-
-            if (result?.Error != null)
-            {
-                throw new HttpJsonRpcRequestException(result.Error);
-            }
-
-            return result?.Result;
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException exception)
+        {
+            throw new HttpRpcRequestException(response, exception);
         }
 
-        public async Task<TResponse?> GetHttpJsonRpcResponseAsync<TResponse, TRequest>(string method, TRequest request, CancellationToken cancellationToken = default) where TRequest : class where TResponse : class
+        return await response.Content.ReadFromJsonAsync(responseTypeInfo, cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task GetHttpJsonRpcResponseAsync(string method, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.PostAsync("json_rpc", new StringContent(JsonSerializer.Serialize(new Request { JsonRpc = _httpRpcClientOptions.JsonRpcVersion, Id = _httpRpcClientOptions.JsonRpcId, Method = method }, Context.Default.Request), Encoding.UTF8, "application/json"), cancellationToken).ConfigureAwait(false);
+
+        try
         {
-            using var cancellationTokenSource = new CancellationTokenSource(HttpRpcClientOptions.RequestTimeoutDelay);
-            var response = await HttpClient.PostAsync("json_rpc", new StringContent(JsonConvert.SerializeObject(new JsonRpc.Request<TRequest> { JsonRpc = HttpRpcClientOptions.JsonRpcVersion, Id = HttpRpcClientOptions.JsonRpcId, Method = method, Parameters = request }), Encoding.UTF8, "application/json"), cancellationToken == default ? cancellationTokenSource.Token : cancellationToken).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException exception)
+        {
+            throw new HttpRpcRequestException(response, exception);
+        }
+    }
 
-            try
-            {
-                response.EnsureSuccessStatusCode();
-            }
-            catch (HttpRequestException exception)
-            {
-                throw new HttpRpcRequestException(response, exception);
-            }
+    public async Task<TResponse?> GetHttpJsonRpcResponseAsync<TResponse>(string method, JsonTypeInfo<Response<TResponse>> responseTypeInfo, CancellationToken cancellationToken = default) where TResponse : class
+    {
+        var response = await _httpClient.PostAsync("json_rpc", new StringContent(JsonSerializer.Serialize(new Request { JsonRpc = _httpRpcClientOptions.JsonRpcVersion, Id = _httpRpcClientOptions.JsonRpcId, Method = method }, Context.Default.Request), Encoding.UTF8, "application/json"), cancellationToken).ConfigureAwait(false);
 
-            using var streamReader = new StreamReader(await response.Content.ReadAsStreamAsync().ConfigureAwait(false));
-            using var jsonReader = new JsonTextReader(streamReader);
-
-            var result = JsonSerializer.Create().Deserialize<JsonRpc.Response<TResponse>>(jsonReader);
-
-            if (result?.Error != null)
-            {
-                throw new HttpJsonRpcRequestException(result.Error);
-            }
-
-            return result?.Result;
+        try
+        {
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException exception)
+        {
+            throw new HttpRpcRequestException(response, exception);
         }
 
-        public void Dispose()
+        var result = await response.Content.ReadFromJsonAsync(responseTypeInfo, cancellationToken).ConfigureAwait(false);
+
+        if (result?.Error != null)
         {
-            HttpClient.Dispose();
+            throw new HttpJsonRpcRequestException(result.Error);
         }
+
+        return result?.Result;
+    }
+
+    public async Task<TResponse?> GetHttpJsonRpcResponseAsync<TResponse, TRequest>(string method, TRequest request, JsonTypeInfo<Response<TResponse>> responseTypeInfo, JsonTypeInfo<Request<TRequest>> requestTypeInfo, CancellationToken cancellationToken = default) where TRequest : class where TResponse : class
+    {
+        var response = await _httpClient.PostAsync("json_rpc", new StringContent(JsonSerializer.Serialize(new Request<TRequest> { JsonRpc = _httpRpcClientOptions.JsonRpcVersion, Id = _httpRpcClientOptions.JsonRpcId, Method = method, Parameters = request }, requestTypeInfo), Encoding.UTF8, "application/json"), cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException exception)
+        {
+            throw new HttpRpcRequestException(response, exception);
+        }
+
+        var result = await response.Content.ReadFromJsonAsync(responseTypeInfo, cancellationToken).ConfigureAwait(false);
+
+        if (result?.Error != null)
+        {
+            throw new HttpJsonRpcRequestException(result.Error);
+        }
+
+        return result?.Result;
+    }
+
+    public void Dispose()
+    {
+        _httpClient.Dispose();
     }
 }
