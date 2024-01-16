@@ -1,35 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<OutputType>Library</OutputType>
-		<TargetFramework>net6</TargetFramework>
-
-		<Platforms>AnyCPU;x64;x86;ARM32;ARM64</Platforms>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 
 		<PackageId>TheDialgaTeam.Cryptonote.Rpc</PackageId>
-		<Version>1.0.0</Version>
+		<Version>1.1.0</Version>
 		<Authors>Yong Jian Ming</Authors>
 		<Company>TheDialgaTeam</Company>
 		<Product>TheDialgaTeam.Cryptonote.Rpc</Product>
 		<Description>Cryptonote Rpc functions.</Description>
-		<Copyright>Copyright © 2021 Yong Jian Ming</Copyright>
+		<Copyright>Copyright © 2023 Yong Jian Ming</Copyright>
 		<PackageProjectUrl>https://github.com/TheDialgaTeam/TheDialgaTeam.Cryptonote.Rpc</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/TheDialgaTeam/TheDialgaTeam.Cryptonote.Rpc</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
-		<DefineConstants>DEBUG</DefineConstants>
-		<Optimize>false</Optimize>
-		<DebugType>embedded</DebugType>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)'=='Release'">
-		<Optimize>true</Optimize>
-		<DebugType>none</DebugType>
 	</PropertyGroup>
 
 </Project>
